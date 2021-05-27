@@ -1,0 +1,25 @@
+{
+  "name": "mysql-eomployer-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Connection.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jbolton89/MySQL-Eomployer-Tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jbolton89/MySQL-Eomployer-Tracker/issues"
+  },
+  "homepage": "https://github.com/Jbolton89/MySQL-Eomployer-Tracker#readme",
+  "dependencies": {
+    "config": "^3.3.6",
+    "express": "^4.17.1",
+    "inquirer": "^8.1.0",
+    "mysql": "^2.18.1"
+  }
+}
