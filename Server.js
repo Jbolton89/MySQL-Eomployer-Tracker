@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const cTable = require('console.table');
+const dotenv = require('dotenv').config();
 
 // Connection information for the sql database
 const connection = mysql.createConnection({
@@ -34,10 +36,46 @@ const start = () => {
             ]
         })
         .then((answer) => {
-            if(answer.optionsMenu === 'View Roles') {
+            if (answer.optionsMenu === 'View Departments') {
+                viewDepartments();
+            } else if (answer.optionsMenu === 'View Roles') {
                 viewRoles();
-            } else if (answer.optionsMenu === 'View Employees')
-        }
+            } else if (answer.optionsMenu === 'View Employees') {
+                viewEmployees();
+            } else if (answer.optionsMenu === 'Add a Department') {
+                addDepartment();
+            } else if (answer.optionsMenu === 'Add a Role') {
+                addRole();
+            } else if (answer.optionsMenu === 'Add an Employee') {
+                addEmployee();
+            } else if (answer.optionsMenu === 'Update a Department') {
+                updateDepartment();
+            } else if (answer.optionsMenu === 'Update a Role') {
+                updateRole();
+            } else if (answer.optionsMenu === 'Update an Eomployee') {
+                updateEmployee();
+            } else {
+                connection.end();
+            }
+        })
+};
+
+const viewDepartments = () => {
+    console.log('Viewing Departments...\n');
+    connection.query('SELECT id, name AS department FROM department', (err, res) => {
+        if (err) throw (err);
+        cTable(res);
+    })
+};
+
+const viewRoles = () => {
+    console.log('Viewing Roles...\n');
+    connection.query('SELECT id, title, salary, department.id, department.name FROM role ORDER BY role.id',
+        (err, res) => {
+            if (err) throw (err);
+            cTable(res);
+        })
+};
 
 
 

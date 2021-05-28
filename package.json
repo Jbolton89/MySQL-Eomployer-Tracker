@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Jbolton89/MySQL-Eomployer-Tracker#readme",
   "dependencies": {
     "config": "^3.3.6",
+    "console.table": "^0.10.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "inquirer": "^8.1.0",
