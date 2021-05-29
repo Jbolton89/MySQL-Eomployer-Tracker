@@ -1,7 +1,10 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const dotenv = require('dotenv').config();
+const {
+    restoreDefaultPrompts
+} = require('inquirer');
+require('dotenv').config();
 
 // Connection information for the sql database
 const connection = mysql.createConnection({
@@ -9,21 +12,21 @@ const connection = mysql.createConnection({
     // using port 3306
     port: 3306,
     // username 
-    user: process.env.BD_USER,
+    user: process.env.DB_USER,
 
     // Password
-    password: process.env.BD_PASS,
+    password: process.env.DB_PASS,
     database: 'employee_db',
 
 });
 
 const start = () => {
     inquirer
-        .prompt({
+        .prompt([{
             name: 'optionsMenu',
             type: 'list',
             message: 'Please select from the below options -',
-            choices: ['View Departments',
+            choices: [
                 'View Departments',
                 'View Roles',
                 'View Employees',
@@ -34,7 +37,7 @@ const start = () => {
                 'Update a Role',
                 'Update an Employee'
             ]
-        })
+        }])
         .then((answer) => {
             if (answer.optionsMenu === 'View Departments') {
                 viewDepartments();
@@ -59,12 +62,14 @@ const start = () => {
             }
         })
 };
+start();
 
 const viewDepartments = () => {
     console.log('Viewing Departments...\n');
     connection.query('SELECT id, name AS department FROM department', (err, res) => {
         if (err) throw (err);
         cTable(res);
+        start();
     })
 };
 
@@ -74,16 +79,154 @@ const viewRoles = () => {
         (err, res) => {
             if (err) throw (err);
             cTable(res);
+            start();
         })
 };
 
+const viewEmployees = () => {
+    console.log('Viewing Roles.....\n');
+    connection.query('SELECT * FROM role_id, first_name, last_name, role_id, manager_id JOIN on employee.role_id = role.id',
+        (err, res) => {
+            if (err) throw (err);
+            cTable(res);
+            start();
+        })
+};
 
+const addDepartment = () => {
+    inquirer
+        .prompt([{
+                name: 'department',
+                type: 'input',
+                message: 'What is the name of your new Department?',
+                validate(value) {
+                    if (!value === true) {
+                        return 'Please type a valid Department name.'
+                    } else {
+                        return true;
+                    }
+                }
+            },
+            {
+                name: 'addEmployees',
+                type: 'input',
+                message: 'Are any of your existing employees moving across to the new Department?',
+                validate(value) {
+                    if (!value === true) {
+                        return 'Please type whatever';
+                    } else {
+                        return true;
+                    }
+                }
+            },
+        ])
+        .then((input) => {
+            connection.query(
+                'UPDATE department SET ?', {
+                    name: input.department.trim(),
+                },
+                (err, res) => {
+                    if (err) throw err;
+                    cTable("New Department Added to Database", );
+                    start();
+                }
+            );
+        });
+};
 
+const addRole = () => {
+        let departmentArr = [];
+        connection.query('SELECT id,name FROM department', (err, res) => {
+            if (err) throw (err);
 
+            inquirer
+                .prompt([{
+                        name: 'addRole',
+                        type: 'input',
+                        message: 'What is the name of the new role?',
+                        validate(input) {
+                            if (!input) {
+                                return 'You need to enter something'
+                            } else {
+                                return true;
+                            }
+                        }
+                    },
+                    {
+                        name: "addSalary",
+                        type: "number",
+                        message: "What is the salary of the new role?",
+                        validate(value) {
+                            if (isNaN(value) === false) {
+                                return true;
+                            }
+                            return false;
+                        },
+                    },
+                    {
+                        name: "addDdepartment",
+                        type: "list",
+                        choices(result) {
+                            result.forEach((department) => {
+                                departmentArr.push(department.name);
 
-// connect to the mysql server and sql database
-connection.connect((err) => {
-    if (err) throw err;
-    console.log(`connected as i ${connection.threadId}`);
-    connection.end();
-});
+                            });
+                            return departmentArr;
+
+                        }
+                    }
+                ])
+                .then((answer) => {
+                    connection.query()
+                })
+
+        });
+
+        const addEmployee = () => {
+
+        }
+
+        // const updateDepartment = () => { 
+        // // const updateProduct = () => {
+        //   console.log('Updating all Rocky Road quantities...\n');
+        //   const query = connection.query(
+        //     'UPDATE products SET ? WHERE ?',
+        //     [
+        //       {
+        //         quantity: 100,
+        //       },
+        //       {
+        //         flavor: 'Rocky Road',
+        //       },
+        //     ],
+        //     (err, res) => {
+        //       if (err) throw err;
+        //       console.log(`${res.affectedRows} products updated!\n`);
+        //       // Call deleteProduct AFTER the UPDATE completes
+        //       deleteProduct();
+        //     }
+        //   );
+
+        //   // logs the actual query being run
+        //   console.log(query.sql);
+        // };
+
+        // }
+
+        const updateDepartment = () => {
+            //  for each as the choices to choose from
+        }
+
+        const updateRole = () => {
+
+        }
+
+        const updateEmployee = () => {
+
+        }
+        // connect to the mysql server and sql database
+        connection.connect((err) => {
+            if (err) throw err;
+            console.log(`connected as i ${connection.threadId}`);
+            connection.end();
+        });
