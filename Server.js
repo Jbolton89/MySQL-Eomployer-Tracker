@@ -177,14 +177,31 @@ const addRole = () => {
                     }
                 ])
                 .then((answer) => {
-                    connection.query()
-                })
+                    let addDepartmentId;
+                    result.forEach((department) => {
+                        if (department.name = answer.addDepartment) {
+                            department = addDepartmentId;
+                        }
+                    });
 
+                    connection.query(
+                        'INSERT INTO roleSET ?', {
+                            title: answer.addRole,
+                            salaery: answer.addSalary,
+                            department_id: departmentId.id,
+                        },
+                        (err, res) => {
+                            cTable("Your role has been successfully added!!");
+                            start();
+                        }
+                    );
+                });
         });
+    };
 
         const addEmployee = () => {
 
-        }
+        };
 
         // const updateDepartment = () => { 
         // // const updateProduct = () => {
