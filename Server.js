@@ -67,8 +67,8 @@ start();
 const viewDepartments = () => {
     console.log('Viewing Departments...\n');
     connection.query('SELECT id, name AS department FROM department', (err, res) => {
-        if (err) throw (err);
-        cTable(res);
+        if (err) throw err;
+        console.table(res);
         start();
     })
 };
@@ -78,7 +78,7 @@ const viewRoles = () => {
     connection.query('SELECT id, title, salary, department.id, department.name FROM role ORDER BY role.id',
         (err, res) => {
             if (err) throw (err);
-            cTable(res);
+            console.table(res);
             start();
         })
 };
@@ -88,7 +88,7 @@ const viewEmployees = () => {
     connection.query('SELECT * FROM role_id, first_name, last_name, role_id, manager_id JOIN on employee.role_id = role.id',
         (err, res) => {
             if (err) throw (err);
-            cTable(res);
+            console.table(res);
             start();
         })
 };
@@ -200,49 +200,78 @@ const addRole = () => {
 };
 
 const addEmployee = () => {
-    let optionsArr = [];
 
-    connection.query('SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee; SELECT id, title FROM role',
-        (erro, res) => {
-            if (err) throw err;
-            inquirer
-                .prompt([{
-                        name: "last_name",
-                        type: "input",
-                        messsage: "What is the new employees last name?",
-                        validate(input) {
-                            if (!input) {
-                                return 'You need to enter something..'
-                            } else {
-                                return true;
-                            }
-                        }
-                    },
-                    {
-                        name: "first_name",
-                        type: "input",
-                        message: "What is the new employees first name?",
-                        validate(input) {
-                            if (!input) {
-                                return 'You need to enter something..'
-                            } else
-                                return true;
+
+connection.query('SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee; SELECT id, title FROM role',
+    (err, res) => {
+        if (err) throw err;
+        inquirer
+            .prompt([{
+                    name: "last_name",
+                    type: "input",
+                    messsage: "What is the new employees last name?",
+                    validate(input) {
+                        if (!input) {
+                            return 'You need to enter something..'
+                        } else {
+                            return true;
                         }
                     }
-                ])
-            connection.query(
-                'INSERT INTO eomployee set ?', {
-                    last_name: answer.last_name,
-                    first_name: answer.first_name,
                 },
-                (err, res) => {
-                    if (err) throw err;
-                    cTabble('You have successfully added a new employee!');
-                    start();
+                {
+                    name: "first_name",
+                    type: "input",
+                    message: "What is the new employees first name?",
+                    validate(input) {
+                        if (!input) {
+                            return 'You need to enter something..'
+                        } else
+                            return true;
+                    }
+                },
+                {
+                    name: "role",
+                    type: "list",
+                    choices() {
+                        let optionsArr = [];
+                        results.forEach(({
+                            role
+                        }) => {
+                            optionsArr.push(role.title)
+
+                        });
+                        return optionsArr;
+                    },
+                    message: "What is the role of your new eomployee?",
                 }
-            )
-        }
-    )
+            ])
+            .then((answer) => {
+                let chosenItem;
+                results.forEach((role) => {
+                    if (role.title === answer.choice) {
+                        chosenItem = role.title;
+
+                    }
+                })
+            });
+    });
+
+
+connection.query(
+    'INSERT INTO eomployee set ?', {
+        last_name: answer.last_name,
+        first_name: answer.first_name,
+        role_id:
+    },
+    (err, res) => {
+        if (err) throw err;
+        console.table('You have successfully added a new employee!');
+        start();
+    }
+)
+)
+}
+)
 };
 
 // const updateDepartment = () => { 
@@ -287,5 +316,4 @@ const updateEmployee = () => {
 connection.connect((err) => {
     if (err) throw err;
     console.log(`connected as i ${connection.threadId}`);
-    connection.end();
 });
