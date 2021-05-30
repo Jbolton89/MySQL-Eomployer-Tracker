@@ -135,115 +135,157 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
-        let departmentArr = [];
-        connection.query('SELECT id,name FROM department', (err, res) => {
-            if (err) throw (err);
+    let departmentArr = [];
+    connection.query('SELECT id,name FROM department', (err, res) => {
+        if (err) throw (err);
 
+        inquirer
+            .prompt([{
+                    name: 'addRole',
+                    type: 'input',
+                    message: 'What is the name of the new role?',
+                    validate(input) {
+                        if (!input) {
+                            return 'You need to enter something'
+                        } else {
+                            return true;
+                        }
+                    }
+                },
+                {
+                    name: "addSalary",
+                    type: "number",
+                    message: "What is the salary of the new role?",
+                    validate(value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    },
+                },
+                {
+                    name: "addDdepartment",
+                    type: "list",
+                    choices(result) {
+                        result.forEach((department) => {
+                            departmentArr.push(department.name);
+
+                        });
+                        return departmentArr;
+
+                    }
+                }
+            ])
+            .then((answer) => {
+                let addDepartmentId;
+                result.forEach((department) => {
+                    if (department.name = answer.addDepartment) {
+                        department = addDepartmentId;
+                    }
+                });
+
+                connection.query(
+                    'INSERT INTO roleSET ?', {
+                        title: answer.addRole,
+                        salary: answer.addSalary,
+                        department_id: departmentId.id,
+                    },
+                    (err, res) => {
+                        cTable("Your role has been successfully added!!");
+                        start();
+                    }
+                );
+            });
+    });
+};
+
+const addEmployee = () => {
+    let optionsArr = [];
+
+    connection.query('SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee; SELECT id, title FROM role',
+        (erro, res) => {
+            if (err) throw err;
             inquirer
                 .prompt([{
-                        name: 'addRole',
-                        type: 'input',
-                        message: 'What is the name of the new role?',
+                        name: "last_name",
+                        type: "input",
+                        messsage: "What is the new employees last name?",
                         validate(input) {
                             if (!input) {
-                                return 'You need to enter something'
+                                return 'You need to enter something..'
                             } else {
                                 return true;
                             }
                         }
                     },
                     {
-                        name: "addSalary",
-                        type: "number",
-                        message: "What is the salary of the new role?",
-                        validate(value) {
-                            if (isNaN(value) === false) {
+                        name: "first_name",
+                        type: "input",
+                        message: "What is the new employees first name?",
+                        validate(input) {
+                            if (!input) {
+                                return 'You need to enter something..'
+                            } else
                                 return true;
-                            }
-                            return false;
-                        },
-                    },
-                    {
-                        name: "addDdepartment",
-                        type: "list",
-                        choices(result) {
-                            result.forEach((department) => {
-                                departmentArr.push(department.name);
-
-                            });
-                            return departmentArr;
-
                         }
                     }
                 ])
-                .then((answer) => {
-                    let addDepartmentId;
-                    result.forEach((department) => {
-                        if (department.name = answer.addDepartment) {
-                            department = addDepartmentId;
-                        }
-                    });
-
-                    connection.query(
-                        'INSERT INTO roleSET ?', {
-                            title: answer.addRole,
-                            salaery: answer.addSalary,
-                            department_id: departmentId.id,
-                        },
-                        (err, res) => {
-                            cTable("Your role has been successfully added!!");
-                            start();
-                        }
-                    );
-                });
-        });
-    };
-
-        const addEmployee = () => {
-
-        };
-
-        // const updateDepartment = () => { 
-        // // const updateProduct = () => {
-        //   console.log('Updating all Rocky Road quantities...\n');
-        //   const query = connection.query(
-        //     'UPDATE products SET ? WHERE ?',
-        //     [
-        //       {
-        //         quantity: 100,
-        //       },
-        //       {
-        //         flavor: 'Rocky Road',
-        //       },
-        //     ],
-        //     (err, res) => {
-        //       if (err) throw err;
-        //       console.log(`${res.affectedRows} products updated!\n`);
-        //       // Call deleteProduct AFTER the UPDATE completes
-        //       deleteProduct();
-        //     }
-        //   );
-
-        //   // logs the actual query being run
-        //   console.log(query.sql);
-        // };
-
-        // }
-
-        const updateDepartment = () => {
-            //  for each as the choices to choose from
+            connection.query(
+                'INSERT INTO eomployee set ?', {
+                    last_name: answer.last_name,
+                    first_name: answer.first_name,
+                },
+                (err, res) => {
+                    if (err) throw err;
+                    cTabble('You have successfully added a new employee!');
+                    start();
+                }
+            )
         }
+    )
+};
 
-        const updateRole = () => {
+// const updateDepartment = () => { 
+// // const updateProduct = () => {
+//   console.log('Updating all Rocky Road quantities...\n');
+//   const query = connection.query(
+//     'UPDATE products SET ? WHERE ?',
+//     [
+//       {
+//         quantity: 100,
+//       },
+//       {
+//         flavor: 'Rocky Road',
+//       },
+//     ],
+//     (err, res) => {
+//       if (err) throw err;
+//       console.log(`${res.affectedRows} products updated!\n`);
+//       // Call deleteProduct AFTER the UPDATE completes
+//       deleteProduct();
+//     }
+//   );
 
-        }
+//   // logs the actual query being run
+//   console.log(query.sql);
+// };
 
-        const updateEmployee = () => {
+// }
 
-        }
-        // connect to the mysql server and sql database
-        connection.connect((err) => {
-            if (err) throw err;
-            console.log(`connected as i ${connection.threadId}`);
-            connection.end();
-        });
+const updateDepartment = () => {
+    //  for each as the choices to choose from
+}
+
+const updateRole = () => {
+
+}
+
+const updateEmployee = () => {
+
+}
+// connect to the mysql server and sql database
+connection.connect((err) => {
+    if (err) throw err;
+    console.log(`connected as i ${connection.threadId}`);
+    connection.end();
+});
