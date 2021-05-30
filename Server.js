@@ -65,8 +65,8 @@ const start = () => {
 start();
 
 const viewDepartments = () => {
-    console.log('Viewing Departments...\n');
     connection.query('SELECT id, name AS department FROM department', (err, res) => {
+        console.log('Viewing Departments...\n');
         if (err) throw err;
         console.table(res);
         start();
@@ -75,7 +75,7 @@ const viewDepartments = () => {
 
 const viewRoles = () => {
     console.log('Viewing Roles...\n');
-    connection.query('SELECT id, title, salary, department.id, department.name FROM role ORDER BY role.id',
+    connection.query('SELECT id, title, salary, department_id FROM role ORDER BY role.id',
         (err, res) => {
             if (err) throw (err);
             console.table(res);
@@ -84,8 +84,8 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
-    console.log('Viewing Roles.....\n');
-    connection.query('SELECT * FROM role_id, first_name, last_name, role_id, manager_id JOIN on employee.role_id = role.id',
+    console.log('Viewing Employees.....\n');
+    connection.query('SELECT first_name, last_name, role_id, manager_id FROM employees JOIN on employee.role_id = role.id',
         (err, res) => {
             if (err) throw (err);
             console.table(res);
@@ -109,7 +109,7 @@ const addDepartment = () => {
             },
             {
                 name: 'addEmployees',
-                type: 'input',
+                type: 'checkbox',
                 message: 'Are any of your existing employees moving across to the new Department?',
                 validate(value) {
                     if (!value === true) {
@@ -202,118 +202,115 @@ const addRole = () => {
 const addEmployee = () => {
 
 
-connection.query('SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee; SELECT id, title FROM role',
-    (err, res) => {
-        if (err) throw err;
-        inquirer
-            .prompt([{
-                    name: "last_name",
-                    type: "input",
-                    messsage: "What is the new employees last name?",
-                    validate(input) {
-                        if (!input) {
-                            return 'You need to enter something..'
-                        } else {
-                            return true;
+        connection.query('SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee; SELECT id, title FROM role',
+            (err, res) => {
+                if (err) throw err;
+                inquirer
+                    .prompt([{
+                            name: "last_name",
+                            type: "input",
+                            messsage: "What is the new employees last name?",
+                            validate(input) {
+                                if (!input) {
+                                    return 'You need to enter something..'
+                                } else {
+                                    return true;
+                                }
+                            }
+                        },
+                        {
+                            name: "first_name",
+                            type: "input",
+                            message: "What is the new employees first name?",
+                            validate(input) {
+                                if (!input) {
+                                    return 'You need to enter something..'
+                                } else
+                                    return true;
+                            }
+                        },
+                        {
+                            name: "role",
+                            type: "list",
+                            choices() {
+                                let optionsArr = [];
+                                results.forEach(({
+                                    role
+                                }) => {
+                                    optionsArr.push(role.title)
+
+                                });
+                                return optionsArr;
+                            },
+                            message: "What is the role of your new eomployee?",
                         }
-                    }
-                },
-                {
-                    name: "first_name",
-                    type: "input",
-                    message: "What is the new employees first name?",
-                    validate(input) {
-                        if (!input) {
-                            return 'You need to enter something..'
-                        } else
-                            return true;
-                    }
-                },
-                {
-                    name: "role",
-                    type: "list",
-                    choices() {
-                        let optionsArr = [];
-                        results.forEach(({
-                            role
-                        }) => {
-                            optionsArr.push(role.title)
+                    ])
+                    .then((answer) => {
+                        let chosenItem;
+                        results.forEach((role) => {
+                            if (role.title === answer.choice) {
+                                chosenItem = role;
 
+                            }
                         });
-                        return optionsArr;
-                    },
-                    message: "What is the role of your new eomployee?",
-                }
-            ])
-            .then((answer) => {
-                let chosenItem;
-                results.forEach((role) => {
-                    if (role.title === answer.choice) {
-                        chosenItem = role.title;
 
-                    }
-                })
+
+                        connection.query(
+                            'INSERT INTO eomployee set ?', {
+                                last_name: answer.last_name,
+                                first_name: answer.first_name,
+                                role_id: role.role.id,
+                            },
+                            (err, res) => {
+                                if (err) throw err;
+                                console.table('You have successfully added a new employee!');
+                                start();
+                            }
+                        )
+
+                    })
             });
-    });
 
+        // const updateDepartment = () => { 
+        // // const updateProduct = () => {
+        //   console.log('Updating all Rocky Road quantities...\n');
+        //   const query = connection.query(
+        //     'UPDATE products SET ? WHERE ?',
+        //     [
+        //       {
+        //         quantity: 100,
+        //       },
+        //       {
+        //         flavor: 'Rocky Road',
+        //       },
+        //     ],
+        //     (err, res) => {
+        //       if (err) throw err;
+        //       console.log(`${res.affectedRows} products updated!\n`);
+        //       // Call deleteProduct AFTER the UPDATE completes
+        //       deleteProduct();
+        //     }
+        //   );
 
-connection.query(
-    'INSERT INTO eomployee set ?', {
-        last_name: answer.last_name,
-        first_name: answer.first_name,
-        role_id:
-    },
-    (err, res) => {
-        if (err) throw err;
-        console.table('You have successfully added a new employee!');
-        start();
-    }
-)
-)
-}
-)
-};
+        //   // logs the actual query being run
+        //   console.log(query.sql);
+        // };
 
-// const updateDepartment = () => { 
-// // const updateProduct = () => {
-//   console.log('Updating all Rocky Road quantities...\n');
-//   const query = connection.query(
-//     'UPDATE products SET ? WHERE ?',
-//     [
-//       {
-//         quantity: 100,
-//       },
-//       {
-//         flavor: 'Rocky Road',
-//       },
-//     ],
-//     (err, res) => {
-//       if (err) throw err;
-//       console.log(`${res.affectedRows} products updated!\n`);
-//       // Call deleteProduct AFTER the UPDATE completes
-//       deleteProduct();
-//     }
-//   );
+        // }
 
-//   // logs the actual query being run
-//   console.log(query.sql);
-// };
+        const updateDepartment = () => {
+            //  for each as the choices to choose from
+        }
 
-// }
+        const updateRole = () => {
 
-const updateDepartment = () => {
-    //  for each as the choices to choose from
-}
+        }
 
-const updateRole = () => {
+        const updateEmployee = () => {
 
-}
-
-const updateEmployee = () => {
-
-}
-// connect to the mysql server and sql database
-connection.connect((err) => {
-    if (err) throw err;
-    console.log(`connected as i ${connection.threadId}`);
-});
+        }
+        // connect to the mysql server and sql database
+        connection.connect((err) => {
+            if (err) throw err;
+            console.log(`connected as i ${connection.threadId}`);
+        })};
