@@ -85,7 +85,7 @@ const viewRoles = () => {
 
 const viewEmployees = () => {
     console.log('Viewing Employees.....\n');
-    connection.query('SELECT first_name, last_name, role_id, manager_id FROM employees JOIN on employee.role_id = role.id',
+    connection.query('SELECT * FROM employee JOIN role ON employee.role_id=role.id',
         (err, res) => {
             if (err) throw (err);
             console.table(res);
@@ -100,7 +100,7 @@ const addDepartment = () => {
                 type: 'input',
                 message: 'What is the name of your new Department?',
                 validate(value) {
-                    if (!value === true) {
+                    if ( !value === true) {
                         return 'Please type a valid Department name.'
                     } else {
                         return true;
@@ -134,9 +134,10 @@ const addDepartment = () => {
         });
 };
 
+
 const addRole = () => {
     let departmentArr = [];
-    connection.query('SELECT id,name FROM department', (err, res) => {
+    connection.query('SELECT id,name FROM department', (err, result) => {
         if (err) throw (err);
 
         inquirer
@@ -164,9 +165,9 @@ const addRole = () => {
                     },
                 },
                 {
-                    name: "addDdepartment",
+                    name: "addDepartment",
                     type: "list",
-                    choices(result) {
+                    choices() {
                         result.forEach((department) => {
                             departmentArr.push(department.name);
 
@@ -185,13 +186,13 @@ const addRole = () => {
                 });
 
                 connection.query(
-                    'INSERT INTO roleSET ?', {
+                    'INSERT INTO role SET ?', {
                         title: answer.addRole,
                         salary: answer.addSalary,
-                        department_id: departmentId.id,
+                        department_id: answer.addDepartment,
                     },
                     (err, res) => {
-                        cTable("Your role has been successfully added!!");
+                        console.table("Your role has been successfully added!!");
                         start();
                     }
                 );
