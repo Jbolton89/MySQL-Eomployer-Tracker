@@ -16,7 +16,7 @@ This is an unfinished app, where you will ultimately be able to store an employe
 This program uses Node.js, Inquirer.js, MySQL, console.table
 
 # Useage
-See Video (Incomplete) - 
+See Video (Incomplete) - https://drive.google.com/file/d/14adY4Bm-ruvoQ475NXndjhUCKCglli2a/view
 
 # Contributing
 
