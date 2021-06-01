@@ -122,7 +122,7 @@ const addDepartment = () => {
         ])
         .then((input) => {
             connection.query(
-                'UPDATE department SET ?', {
+                'INSERT INTO department SET ?', {
                     name: input.department.trim(),
                 },
                 (err, res) => {
@@ -175,6 +175,7 @@ const addRole = () => {
                         return departmentArr;
 
                     }
+                    
                 }
             ])
             .then((answer) => {
@@ -203,7 +204,7 @@ const addRole = () => {
 const addEmployee = () => {
 
 
-        connection.query('SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee; SELECT id, title FROM role',
+        connection.query(`SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee`,
             (err, res) => {
                 if (err) throw err;
                 inquirer
@@ -235,7 +236,7 @@ const addEmployee = () => {
                             type: "list",
                             choices() {
                                 let optionsArr = [];
-                                results.forEach(({
+                                res.forEach(({
                                     role
                                 }) => {
                                     optionsArr.push(role.title)
@@ -243,13 +244,13 @@ const addEmployee = () => {
                                 });
                                 return optionsArr;
                             },
-                            message: "What is the role of your new eomployee?",
+                            message: "What is the role of your new employee?",
                         }
                     ])
                     .then((answer) => {
                         let chosenItem;
                         results.forEach((role) => {
-                            if (role.title === answer.choice) {
+                            if (role.title === answer.role) {
                                 chosenItem = role;
 
                             }
@@ -257,7 +258,7 @@ const addEmployee = () => {
 
 
                         connection.query(
-                            'INSERT INTO eomployee set ?', {
+                            'INSERT INTO employee set ?', {
                                 last_name: answer.last_name,
                                 first_name: answer.first_name,
                                 role_id: role.role.id,
