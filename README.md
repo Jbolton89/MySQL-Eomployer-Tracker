@@ -13,17 +13,18 @@ This is an unfinished app, where you will ultimately be able to store an employe
 
 # Installation
 
-This program uses Node.js, Inquirer.js and MySQL
+This program uses Node.js, Inquirer.js, MySQL, console.table
 
 # Useage
-
+See Video (Incomplete) - 
 
 # Contributing
 
+Only myself contributing
+# Questions 
 
-# License
+If you have any questions please email me at jasonbolton89@gmail.com, or visit my work at Github/jbolton89
 
 
-# Questions
 
 

@@ -201,77 +201,71 @@ const addRole = () => {
     });
 };
 
-const addEmployee = () => {
+const addEmployee = async () => {
+    let roles;
+    connection.query('SELECT * FROM role', (err, res) => {
+        if (err) throw err;
+        roles = res;
+    });
 
+    connection.query(`SELECT id, CONCAT(last_name, " ", first_name ) AS employee FROM employee`, (err, res) => {
+        if (err) throw err;
+        inquirer
+            .prompt([{
+                name: "last_name",
+                type: "input",
+                messsage: "What is the new employees last name?",
+                validate(input) {
+                    if (!input) {
+                        return 'You need to enter something..'
+                    } else {
+                        return true;
+                    }
+                }
+            },
+            {
+                name: "first_name",
+                type: "input",
+                message: "What is the new employees first name?",
+                validate(input) {
+                    if (!input) {
+                        return 'You need to enter something..'
+                    } else
+                        return true;
+                }
+            },
+            {
+                name: "role",
+                type: "list",
+                choices() {
+                    let optionsArr = [];
+                    roles.forEach(role => {
+                        optionsArr.push(role.title)
+                    });
+                    return optionsArr;
+                },
+                message: "What is the role of your new employee?",
+            }
+        ])
+        .then((answer) => {
+            let roleId = roles.find(role => role.title === answer.role).id;
 
-        connection.query(`SELECT id, CONCAT(last_name, " ", first name ) AS employee FROM employee`,
-            (err, res) => {
-                if (err) throw err;
-                inquirer
-                    .prompt([{
-                            name: "last_name",
-                            type: "input",
-                            messsage: "What is the new employees last name?",
-                            validate(input) {
-                                if (!input) {
-                                    return 'You need to enter something..'
-                                } else {
-                                    return true;
-                                }
-                            }
-                        },
-                        {
-                            name: "first_name",
-                            type: "input",
-                            message: "What is the new employees first name?",
-                            validate(input) {
-                                if (!input) {
-                                    return 'You need to enter something..'
-                                } else
-                                    return true;
-                            }
-                        },
-                        {
-                            name: "role",
-                            type: "list",
-                            choices() {
-                                let optionsArr = [];
-                                res.forEach(({
-                                    role
-                                }) => {
-                                    optionsArr.push(role.title)
+            connection.query(
+                'INSERT INTO employee set ?', {
+                    last_name: answer.last_name,
+                    first_name: answer.first_name,
+                    role_id: roleId,
+                },
+                (err, res) => {
+                    if (err) throw err;
+                    console.table('You have successfully added a new employee!');
+                    start();
+                }
+            )
 
-                                });
-                                return optionsArr;
-                            },
-                            message: "What is the role of your new employee?",
-                        }
-                    ])
-                    .then((answer) => {
-                        let chosenItem;
-                        results.forEach((role) => {
-                            if (role.title === answer.role) {
-                                chosenItem = role;
-
-                            }
-                        });
-
-
-                        connection.query(
-                            'INSERT INTO employee set ?', {
-                                last_name: answer.last_name,
-                                first_name: answer.first_name,
-                                role_id: role.role.id,
-                            },
-                            (err, res) => {
-                                if (err) throw err;
-                                console.table('You have successfully added a new employee!');
-                                start();
-                            }
-                        )
-
-                    })
-            });
+        })
+});
+}
 
         // const updateDepartment = () => { 
         // // const updateProduct = () => {
@@ -315,4 +309,4 @@ const addEmployee = () => {
         connection.connect((err) => {
             if (err) throw err;
             console.log(`connected as i ${connection.threadId}`);
-        })};
+        });
