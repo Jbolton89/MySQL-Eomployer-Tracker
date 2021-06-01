@@ -107,18 +107,18 @@ const addDepartment = () => {
                     }
                 }
             },
-            {
-                name: 'addEmployees',
-                type: 'checkbox',
-                message: 'Are any of your existing employees moving across to the new Department?',
-                validate(value) {
-                    if (!value === true) {
-                        return 'Please type whatever';
-                    } else {
-                        return true;
-                    }
-                }
-            },
+            // {
+            //     name: 'addEmployees',
+            //     type: 'checkbox',
+            //     message: 'Are any of your existing employees moving across to the new Department?',
+            //     validate(value) {
+            //         if (!value === true) {
+            //             return 'Please type whatever';
+            //         } else {
+            //             return true;
+            //         }
+            //     }
+            // },
         ])
         .then((input) => {
             connection.query(
@@ -127,7 +127,7 @@ const addDepartment = () => {
                 },
                 (err, res) => {
                     if (err) throw err;
-                    cTable("New Department Added to Database", );
+                    console.table("New Department Added to Database", );
                     start();
                 }
             );
